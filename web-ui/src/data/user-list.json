@@ -1,0 +1,47 @@
+[
+  {
+    "id": "u1",
+    "username": "woolenwhimsy",
+    "password": "knit123",
+    "displayName": "Sarah Chen",
+    "avatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop&auto=format",
+    "location": "Portland, OR",
+    "bio": "Passionate knitter obsessed with colorwork and cozy sweaters. I knit through every season.",
+    "joinedDate": "2021-03-14",
+    "following": ["u2", "u3"],
+    "followers": ["u2", "u3"],
+    "projectCount": 24,
+    "queueCount": 12,
+    "stashCount": 47
+  },
+  {
+    "id": "u2",
+    "username": "threadcountess",
+    "password": "fiber456",
+    "displayName": "Emma Rivera",
+    "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop&auto=format",
+    "location": "Brooklyn, NY",
+    "bio": "Crochet designer and dye enthusiast. I turn fiber into stories.",
+    "joinedDate": "2020-07-22",
+    "following": ["u1", "u3"],
+    "followers": ["u1"],
+    "projectCount": 38,
+    "queueCount": 7,
+    "stashCount": 92
+  },
+  {
+    "id": "u3",
+    "username": "yarnalchemy",
+    "password": "stash789",
+    "displayName": "Tom Walsh",
+    "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&auto=format",
+    "location": "Edinburgh, Scotland",
+    "bio": "Spinner, weaver, and slow knitter. Sheep farmer on weekends.",
+    "joinedDate": "2019-11-05",
+    "following": ["u1"],
+    "followers": ["u1", "u2"],
+    "projectCount": 61,
+    "queueCount": 19,
+    "stashCount": 134
+  }
+]

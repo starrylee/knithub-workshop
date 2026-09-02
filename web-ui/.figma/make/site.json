@@ -1,0 +1,11 @@
+{
+  "title": "KnitHub — 手作者的在线家园",
+  "description": "Connect with fellow fiber art enthusiasts to manage projects, explore patterns, and share creations in a vibrant online community.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

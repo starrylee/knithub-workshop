@@ -1,0 +1,90 @@
+[
+  {
+    "id": "proj1",
+    "userId": "u1",
+    "patternId": "p1",
+    "patternName": "Autumn Ridgeline Sweater",
+    "status": "in-progress",
+    "startDate": "2024-10-03",
+    "yarnUsed": ["y3", "y5"],
+    "needleSize": "5mm",
+    "size": "M",
+    "progress": 65,
+    "notes": "Started with the back piece. The ridge stripe pattern is very satisfying to knit! Need to remember to twist yarn at color joins.",
+    "photos": [
+      "https://images.unsplash.com/photo-1641642231157-0849081598a2?w=600&h=480&fit=crop&auto=format"
+    ],
+    "isPublished": false,
+    "lastUpdated": "2024-11-20"
+  },
+  {
+    "id": "proj2",
+    "userId": "u1",
+    "patternId": "p7",
+    "patternName": "Harbor Heel Socks",
+    "status": "completed",
+    "startDate": "2024-08-15",
+    "completedDate": "2024-09-02",
+    "yarnUsed": ["y1"],
+    "needleSize": "2.5mm",
+    "size": "M (EU 39-42)",
+    "progress": 100,
+    "notes": "Used Malabrigo Sock in 'Solis' colorway. The heel technique is so smooth—will definitely use this pattern again. Made slight mods to the leg length.",
+    "photos": [
+      "https://images.unsplash.com/photo-1595341595379-cf1cb694ea1f?w=600&h=480&fit=crop&auto=format"
+    ],
+    "isPublished": true,
+    "lastUpdated": "2024-09-02"
+  },
+  {
+    "id": "proj3",
+    "userId": "u1",
+    "patternId": "p12",
+    "patternName": "Linen Stitch Cowl",
+    "status": "in-progress",
+    "startDate": "2024-11-01",
+    "yarnUsed": ["y2"],
+    "needleSize": "3mm",
+    "size": "One Size",
+    "progress": 30,
+    "notes": "Working through my skein of Qing Fibre Single in 'Midnight Moss'. The linen stitch is meditative but the fabric is spectacular.",
+    "photos": [],
+    "isPublished": false,
+    "lastUpdated": "2024-11-18"
+  },
+  {
+    "id": "proj4",
+    "userId": "u1",
+    "patternId": "p2",
+    "patternName": "Snowfield Stranded Hat",
+    "status": "completed",
+    "startDate": "2024-07-04",
+    "completedDate": "2024-07-10",
+    "yarnUsed": ["y4"],
+    "needleSize": "4mm",
+    "size": "Adult L/XL",
+    "progress": 100,
+    "notes": "Great quick project! Made it as a Christmas gift. Used Drops Lima in cream and slate blue.",
+    "photos": [
+      "https://images.unsplash.com/photo-1544967919-44c1ef2f9e7a?w=600&h=480&fit=crop&auto=format"
+    ],
+    "isPublished": true,
+    "lastUpdated": "2024-07-10"
+  },
+  {
+    "id": "proj5",
+    "userId": "u2",
+    "patternId": "p3",
+    "patternName": "Ripple Tide Blanket",
+    "status": "in-progress",
+    "startDate": "2024-09-20",
+    "yarnUsed": [],
+    "needleSize": "6mm hook",
+    "size": "Throw",
+    "progress": 45,
+    "notes": "Testing a custom colorway of terracotta, ochre, and forest green. This is going to be beautiful.",
+    "photos": [],
+    "isPublished": false,
+    "lastUpdated": "2024-11-15"
+  }
+]

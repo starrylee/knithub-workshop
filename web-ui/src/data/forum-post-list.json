@@ -1,0 +1,177 @@
+[
+  {
+    "id": "fp1",
+    "groupId": "g1",
+    "authorId": "u1",
+    "title": "Finally conquered the long-tail cast on!",
+    "content": "After three failed attempts and two YouTube tutorials, I finally got it! The long-tail cast on is so much stretchier than the knitted cast on I was using. My ribbing actually fits over my hand now. Sharing my first swatch here—it's not perfect but I'm genuinely proud. Anyone have tips for maintaining consistent tension?",
+    "image": "https://images.unsplash.com/photo-1615310748170-29d7088865ad?w=400&h=300&fit=crop&auto=format",
+    "likes": 48,
+    "createdAt": "2024-11-18T14:32:00Z",
+    "replies": [
+      {
+        "id": "r1",
+        "authorId": "u2",
+        "content": "Congrats! Long-tail is such a game changer. For tension: try wrapping the yarn around your thumb with your non-dominant hand. Keeps it consistent. Also—your swatch looks lovely!",
+        "likes": 12,
+        "createdAt": "2024-11-18T15:10:00Z"
+      },
+      {
+        "id": "r2",
+        "authorId": "u3",
+        "content": "I spent two weeks on that cast on when I started. It clicks one day and then you'll wonder how you ever lived without it. Welcome to the long-tail club!",
+        "likes": 9,
+        "createdAt": "2024-11-18T17:45:00Z"
+      }
+    ]
+  },
+  {
+    "id": "fp2",
+    "groupId": "g1",
+    "authorId": "u2",
+    "title": "Best first sweater patterns?",
+    "content": "I've been knitting for about 8 months and have finished 3 pairs of socks and 2 hats. I'm feeling brave enough for my first sweater! I'm drawn to top-down, in-the-round construction. Anyone have recommendations for a forgiving first sweater that still looks like a real garment?",
+    "image": null,
+    "likes": 73,
+    "createdAt": "2024-11-15T09:15:00Z",
+    "replies": [
+      {
+        "id": "r3",
+        "authorId": "u1",
+        "content": "The Autumn Ridgeline Sweater is actually beginner-accessible despite being listed as intermediate! The construction is very logical. Or look at the Flax by TinCan Knits—it's free and practically self-teaching.",
+        "likes": 21,
+        "createdAt": "2024-11-15T10:00:00Z"
+      },
+      {
+        "id": "r4",
+        "authorId": "u3",
+        "content": "Ease into it with the Flax as suggested. The key is getting your gauge swatch right—yes, it's boring, but a gauge swatch is the difference between a sweater and a knitted bag.",
+        "likes": 34,
+        "createdAt": "2024-11-15T11:22:00Z"
+      }
+    ]
+  },
+  {
+    "id": "fp3",
+    "groupId": "g4",
+    "authorId": "u1",
+    "title": "Harbor Heel FO — my 12th pair this year!",
+    "content": "Just finished my 12th pair of socks for 2024! Used Malabrigo Sock in Solis for these Harbor Heels. The short-row heel in this pattern is the cleanest I've ever made—no holes, no gaps. Pattern link in comments. Highly recommend for anyone wanting to perfect their heel technique.",
+    "image": "https://images.unsplash.com/photo-1595341595379-cf1cb694ea1f?w=400&h=300&fit=crop&auto=format",
+    "likes": 124,
+    "createdAt": "2024-09-04T19:00:00Z",
+    "replies": [
+      {
+        "id": "r5",
+        "authorId": "u2",
+        "content": "TWELVE pairs in a year! Goals. Those socks look absolutely perfect, the colorway is stunning too.",
+        "likes": 18,
+        "createdAt": "2024-09-04T20:12:00Z"
+      },
+      {
+        "id": "r6",
+        "authorId": "u3",
+        "content": "Solis is such a generous colorway—long repeats so you get real variation. Your tension looks impeccable. Do you block your socks?",
+        "likes": 7,
+        "createdAt": "2024-09-05T08:30:00Z"
+      }
+    ]
+  },
+  {
+    "id": "fp4",
+    "groupId": "g3",
+    "authorId": "u3",
+    "title": "First attempt at acid dyeing — lessons learned",
+    "content": "I finally set up a dedicated dye studio in my garage and did my first batch of acid-dyed fingering weight. I used Wilton food coloring for a forest floor palette—mossy greens, brown, and a whisper of terracotta. The results were more muted than expected (I think my pH was off) but honestly I love them. Tips from more experienced dyers welcome!",
+    "image": "https://images.unsplash.com/photo-1776164836782-13b5792d4071?w=400&h=300&fit=crop&auto=format",
+    "likes": 89,
+    "createdAt": "2024-11-10T16:45:00Z",
+    "replies": [
+      {
+        "id": "r7",
+        "authorId": "u2",
+        "content": "Love the forest floor concept! Wilton colors definitely run more pastel than professional acid dyes. For more saturation, try Dharma Trading's acid dyes—same process, much deeper results. Also make sure your citric acid concentration is around 1-2%.",
+        "likes": 31,
+        "createdAt": "2024-11-10T18:00:00Z"
+      }
+    ]
+  },
+  {
+    "id": "fp5",
+    "groupId": "g2",
+    "authorId": "u2",
+    "title": "Tapestry crochet — are charts or written instructions better?",
+    "content": "I'm starting a tapestry crochet bag project and the pattern comes with both a chart and row-by-row written instructions. For complex colorwork like this, do you work from the chart or the text? I find myself flipping between them which is slowing me down.",
+    "image": null,
+    "likes": 56,
+    "createdAt": "2024-11-12T11:00:00Z",
+    "replies": [
+      {
+        "id": "r8",
+        "authorId": "u1",
+        "content": "Charts, always. Once you train your eye to read the grid, you can see the design emerging and anticipate upcoming color changes. Use a magnetic row tracker and don't look back!",
+        "likes": 29,
+        "createdAt": "2024-11-12T12:15:00Z"
+      },
+      {
+        "id": "r9",
+        "authorId": "u3",
+        "content": "Depends on the project complexity. For dense tapestry, charts are essential—the visual map is irreplaceable. Written instructions help when I'm learning a new stitch technique but not for following colorwork.",
+        "likes": 14,
+        "createdAt": "2024-11-12T14:30:00Z"
+      }
+    ]
+  },
+  {
+    "id": "fp6",
+    "groupId": "g6",
+    "authorId": "u1",
+    "title": "Winter KAL 2024 — Week 3 Check-In!",
+    "content": "How's everyone getting on with the Nordic Yoke Pullover KAL? I'm halfway through the colorwork yoke and absolutely loving the process. Post your progress photos and tag your color combo choices! Remember, the final check-in is December 20th and we have yarn prizes for finishers.",
+    "image": "https://images.unsplash.com/photo-1584992236310-6edddc08acff?w=400&h=300&fit=crop&auto=format",
+    "likes": 201,
+    "createdAt": "2024-11-20T10:00:00Z",
+    "replies": [
+      {
+        "id": "r10",
+        "authorId": "u3",
+        "content": "Week 3 check-in! I'm using handspun 2-ply in natural black and undyed white from my own flock. The yoke is about 40% done. The pattern instructions are incredibly clear.",
+        "likes": 45,
+        "createdAt": "2024-11-20T11:30:00Z"
+      },
+      {
+        "id": "r11",
+        "authorId": "u2",
+        "content": "Just cast on last night! Working in Drops Lima—teal and cream. A bit behind but will catch up this weekend. The chart is so well-organized.",
+        "likes": 23,
+        "createdAt": "2024-11-20T14:00:00Z"
+      }
+    ]
+  },
+  {
+    "id": "fp7",
+    "groupId": "g5",
+    "authorId": "u3",
+    "title": "Spinning my own Jacob fleece — fiber prep methods compared",
+    "content": "I've been processing fleece from two of my Jacob sheep and testing different prep methods: hand carding vs. drum carding vs. combing. The results are dramatically different in terms of fiber alignment, luster, and the final yarn character. Sharing my notes for anyone considering going truly flock-to-finished.",
+    "image": "https://images.unsplash.com/photo-1550376026-7375b92bb318?w=400&h=300&fit=crop&auto=format",
+    "likes": 143,
+    "createdAt": "2024-11-08T13:00:00Z",
+    "replies": [
+      {
+        "id": "r12",
+        "authorId": "u1",
+        "content": "This is incredible. I've always wanted to try spinning from raw fleece. Is the Jacob wool scratchy or is it softer than I imagine?",
+        "likes": 11,
+        "createdAt": "2024-11-08T14:45:00Z"
+      },
+      {
+        "id": "r13",
+        "authorId": "u2",
+        "content": "The documentation here is so thorough, Tom. Saving this post. The difference between combed and carded really is night and day for a finished garment—worsted vs. woolen spun feel completely different to wear.",
+        "likes": 27,
+        "createdAt": "2024-11-08T16:20:00Z"
+      }
+    ]
+  }
+]

@@ -1,0 +1,80 @@
+[
+  {
+    "id": "g1",
+    "name": "Beginner Knitters Circle",
+    "description": "A warm, judgment-free space for those just picking up their needles. Ask questions, share your first projects, and celebrate every stitch.",
+    "image": "https://images.unsplash.com/photo-1641060889144-1cc91e6871ce?w=400&h=280&fit=crop&auto=format",
+    "memberCount": 14820,
+    "postCount": 6344,
+    "category": "knitting",
+    "tags": ["beginner", "help", "support"],
+    "createdDate": "2019-01-15",
+    "moderators": ["u2"],
+    "members": ["u1", "u2", "u3"]
+  },
+  {
+    "id": "g2",
+    "name": "Advanced Crochet Collective",
+    "description": "Pushing the limits of crochet — intricate tapestry work, filet crochet, tunisian techniques, sculptural amigurumi, and freeform fiber art.",
+    "image": "https://images.unsplash.com/photo-1756362400728-4038e18281df?w=400&h=280&fit=crop&auto=format",
+    "memberCount": 5203,
+    "postCount": 3120,
+    "category": "crochet",
+    "tags": ["advanced", "technique", "art"],
+    "createdDate": "2020-03-22",
+    "moderators": ["u1"],
+    "members": ["u1", "u2"]
+  },
+  {
+    "id": "g3",
+    "name": "Yarn Dyers Guild",
+    "description": "Hand dyers, kettle dyers, and indie dye enthusiasts share tips, tricks, color theory, and dye recipes. Support indie dyers!",
+    "image": "https://images.unsplash.com/photo-1619608155967-7a5058b2a963?w=400&h=280&fit=crop&auto=format",
+    "memberCount": 3410,
+    "postCount": 1892,
+    "category": "dyeing",
+    "tags": ["dyeing", "indie-yarn", "color"],
+    "createdDate": "2020-11-08",
+    "moderators": ["u3"],
+    "members": ["u2", "u3"]
+  },
+  {
+    "id": "g4",
+    "name": "Sock Knitters Anonymous",
+    "description": "Addicted to knitting socks? Us too. Share your FOs, try-ons, yarn splurges, and heel technique debates. Two at a time or magic loop—all welcome.",
+    "image": "https://images.unsplash.com/photo-1595341595379-cf1cb694ea1f?w=400&h=280&fit=crop&auto=format",
+    "memberCount": 22001,
+    "postCount": 15340,
+    "category": "knitting",
+    "tags": ["socks", "fingering", "toe-up", "cuff-down"],
+    "createdDate": "2018-09-30",
+    "moderators": ["u1", "u2"],
+    "members": ["u1", "u2", "u3"]
+  },
+  {
+    "id": "g5",
+    "name": "Slow Fiber Movement",
+    "description": "From fleece to finished object—we celebrate spinning, weaving, natural dyeing, and the full lifecycle of fiber. Slowing down to appreciate every step.",
+    "image": "https://images.unsplash.com/photo-1550376026-7375b92bb318?w=400&h=280&fit=crop&auto=format",
+    "memberCount": 8760,
+    "postCount": 4210,
+    "category": "spinning",
+    "tags": ["spinning", "weaving", "natural-dye", "slow-craft"],
+    "createdDate": "2021-02-14",
+    "moderators": ["u3"],
+    "members": ["u1", "u3"]
+  },
+  {
+    "id": "g6",
+    "name": "KAL Headquarters",
+    "description": "The home of KnitHub's knit-alongs. Join seasonal KALs, find project partners, and stay motivated with weekly check-ins and prize drawings.",
+    "image": "https://images.unsplash.com/photo-1584992236310-6edddc08acff?w=400&h=280&fit=crop&auto=format",
+    "memberCount": 31500,
+    "postCount": 28900,
+    "category": "community",
+    "tags": ["KAL", "community", "motivation"],
+    "createdDate": "2019-06-01",
+    "moderators": ["u1", "u2", "u3"],
+    "members": ["u1", "u2", "u3"]
+  }
+]
