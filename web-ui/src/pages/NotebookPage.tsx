@@ -29,7 +29,30 @@ export default function NotebookPage() {
     searchParams.get("new")
   );
 
-  const pageUser = users.find((u) => u.username === username);
+  // FT-01 兜底（PO 裁定 2026-09-07）：后端真实账号（种子 zhinv / 新注册用户）不在 mock
+  // user-list.json 中，个人页以当前登录用户的身份兜底渲染，项目/库存等列表自然为空，
+  // 展示空状态即可（匹配大小写不敏感，对齐 FT-01 决策 1/4 口径）。
+  // FT-02 阶段 8 数据源切换（import json → fetch）后本兜底退役。
+  const fallbackUser: (typeof users)[number] | null =
+    currentUser && username && currentUser.username.toLowerCase() === username.toLowerCase()
+      ? {
+          id: String(currentUser.id), // mock 项目按 "u1" 格式 userId 过滤，数字 id 字符串不会误匹配
+          username: currentUser.username,
+          displayName: currentUser.displayName,
+          avatar: currentUser.avatar,
+          password: "", // mock 类型兼容占位，不参与渲染
+          location: "",
+          bio: "",
+          joinedDate: "",
+          following: [],
+          followers: [],
+          projectCount: 0,
+          queueCount: 0,
+          stashCount: 0,
+        }
+      : null;
+
+  const pageUser = users.find((u) => u.username === username) ?? fallbackUser;
   if (!pageUser) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-20 text-center">
@@ -90,11 +113,14 @@ export default function NotebookPage() {
                 {pageUser.displayName}
               </h1>
               <p className="text-sm mb-2" style={{ color: "#9E8878" }}>
-                @{pageUser.username} · 📍 {pageUser.location}
+                @{pageUser.username}
+                {pageUser.location && <> · 📍 {pageUser.location}</>}
               </p>
-              <p className="text-sm max-w-xl leading-relaxed" style={{ color: "#C8B99E" }}>
-                {pageUser.bio}
-              </p>
+              {pageUser.bio && (
+                <p className="text-sm max-w-xl leading-relaxed" style={{ color: "#C8B99E" }}>
+                  {pageUser.bio}
+                </p>
+              )}
               <div className="flex gap-5 mt-4 text-sm">
                 {[
                   ["项目", pageUser.projectCount],
@@ -110,9 +136,11 @@ export default function NotebookPage() {
               </div>
             </div>
           </div>
-          <p className="mt-3 text-xs" style={{ color: "#6B5040" }}>
-            加入时间：{new Date(pageUser.joinedDate).toLocaleDateString("zh-CN", { year: "numeric", month: "long", day: "numeric" })}
-          </p>
+          {pageUser.joinedDate && (
+            <p className="mt-3 text-xs" style={{ color: "#6B5040" }}>
+              加入时间：{new Date(pageUser.joinedDate).toLocaleDateString("zh-CN", { year: "numeric", month: "long", day: "numeric" })}
+            </p>
+          )}
         </div>
       </div>
 
@@ -178,6 +206,11 @@ export default function NotebookPage() {
                   {completed.map((proj) => <ProjectCard key={proj.id} project={proj} isOwner={isOwner} />)}
                 </div>
               </section>
+            )}
+            {inProgress.length === 0 && completed.length === 0 && (
+              <p className="text-sm" style={{ color: "var(--muted-foreground)" }}>
+                还没有项目——先去图案库逛逛，挑一个想织的吧。
+              </p>
             )}
           </div>
         )}
