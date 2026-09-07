@@ -1,0 +1,14 @@
+# 本地配置（含环境相关地址与凭据，不进版本库）
+.env
+
+# 运行产物
+reports/
+allure-results/
+behave-reports/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/

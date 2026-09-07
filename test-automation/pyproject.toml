@@ -1,0 +1,13 @@
+[project]
+name = "test-automation"
+version = "0.1.0"
+description = "BDD Test Automation Framework with Python, Behave, and Playwright"
+requires-python = ">=3.10"
+
+[tool.black]
+line-length = 100
+target-version = ['py310', 'py311', 'py312']
+
+[tool.isort]
+profile = "black"
+line_length = 100
