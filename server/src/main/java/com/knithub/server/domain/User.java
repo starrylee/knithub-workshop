@@ -1,21 +1,75 @@
 package com.knithub.server.domain;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+
 /**
  * 用户领域实体（PG 兼容，一次到位；技术方案 3.1）。
  *
- * <p>字段清单（存储层 snake_case，与 PG 列名对齐，迁移零改名）：
- * <ul>
- *   <li>id——BIGSERIAL PK，number，自增（Repository 内 max+1）</li>
- *   <li>username——VARCHAR(50) UNIQUE NOT NULL（唯一由代码保证，重复→409）</li>
- *   <li>password_hash——VARCHAR(72) NOT NULL，BCrypt；永不出现在任何 API 响应</li>
- *   <li>display_name——VARCHAR(50) NOT NULL，默认 = username</li>
- *   <li>avatar——VARCHAR(500) NOT NULL，默认占位图 URL</li>
- *   <li>created_at——TIMESTAMPTZ NOT NULL，ISO 8601 字符串</li>
- * </ul>
+ * <p>存储字段 snake_case（类级 {@code @JsonNaming} 将 passwordHash 映射为
+ * {@code password_hash} 等），与未来 PG 列名一次对齐，迁移零改名；
+ * TIMESTAMPTZ 以 ISO 8601 字符串承载。
  *
- * <p>交付阶段：FT-01 阶段 1（技术方案第 4 节）。
- * 实现前必读：AGENTS.md 红线 + FT-01-US-01。
+ * <p>安全约束：{@code passwordHash} 永不出现在任何 API 响应——对外暴露
+ * 一律经 {@code UserResponse} 转换（技术方案 3.1，FT-01-US-01 AC-4）。
+ *
+ * <p>实现于 FT-01-US-02（按登录需求落地；写路径随 US-01 注册接入）。
  */
-// TODO FT-01: 落地字段与手写 getter/setter（无 Lombok）
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class User {
+
+    private Long id;
+    private String username;
+    private String passwordHash;
+    private String displayName;
+    private String avatar;
+    private String createdAt;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
 }

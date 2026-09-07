@@ -33,6 +33,10 @@ export default defineConfig(({ mode }) => {
       host: '0.0.0.0',
       port: parseInt(process.env.PORT || '5174'),
       strictPort: true,
+      // FT-01-US-02: 开发期 /api 代理到本地后端（8080 为契约端口，技术方案第 1 节）
+      proxy: {
+        '/api': 'http://localhost:8080',
+      },
       watch: { ignored: ['**/.figma/**'] },
     },
     preview: {

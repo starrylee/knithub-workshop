@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth, User } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 interface LoginModalProps {
@@ -14,18 +14,29 @@ export default function LoginModal({ onClose }: LoginModalProps) {
   const [error, setError] = useState("");
   const [isRegister, setIsRegister] = useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (isRegister) {
-      setError("Registration coming soon! Try logging in with a demo account.");
+      setError("注册功能即将上线，请先用演示账号登录体验");
       return;
     }
-    const ok = login(username, password);
-    if (ok) {
+    // AC-3（决策 7）：空输入前端必填校验，不向后端发出登录请求
+    if (!username.trim()) {
+      setError("请输入用户名");
+      return;
+    }
+    if (!password) {
+      setError("请输入密码");
+      return;
+    }
+    const user: User | null = await login(username, password);
+    if (user) {
+      // 决策 6：主动登录成功跳转个人页（操作触发登录的续接逻辑随 US-05 接入）
       onClose();
-      navigate(`/users/${username}`);
+      navigate(`/users/${user.username}`);
     } else {
-      setError("Invalid username or password. Try: woolenwhimsy / knit123");
+      // AC-2：统一提示，不区分用户名或密码错误（防用户名枚举）
+      setError("用户名或密码错误");
     }
   }
 
@@ -51,23 +62,23 @@ export default function LoginModal({ onClose }: LoginModalProps) {
         <div className="mb-6 text-center">
           <span className="text-3xl">🧶</span>
           <h2 className="text-2xl font-bold mt-2" style={{ fontFamily: "Lora, serif", color: "var(--foreground)" }}>
-            {isRegister ? "Join KnitHub" : "Welcome back"}
+            {isRegister ? "加入 KnitHub" : "欢迎回来"}
           </h2>
           <p className="text-sm mt-1" style={{ color: "var(--muted-foreground)" }}>
-            {isRegister ? "Start your fiber arts journey" : "Sign in to your notebook"}
+            {isRegister ? "开启你的编织之旅" : "登录你的编织笔记本"}
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-1" style={{ color: "var(--foreground)" }}>
-              Username
+              用户名
             </label>
             <input
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="e.g. woolenwhimsy"
+              placeholder="如 woolenwhimsy"
               className="w-full px-3 py-2 rounded-lg text-sm outline-none focus:ring-2"
               style={{
                 background: "var(--muted)",
@@ -78,7 +89,7 @@ export default function LoginModal({ onClose }: LoginModalProps) {
           </div>
           <div>
             <label className="block text-sm font-medium mb-1" style={{ color: "var(--foreground)" }}>
-              Password
+              密码
             </label>
             <input
               type="password"
@@ -105,7 +116,7 @@ export default function LoginModal({ onClose }: LoginModalProps) {
             className="w-full py-2.5 rounded-lg font-semibold text-sm transition-opacity hover:opacity-90"
             style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
           >
-            {isRegister ? "Create Account" : "Sign In"}
+            {isRegister ? "注 册" : "登 录"}
           </button>
         </form>
 
@@ -115,13 +126,13 @@ export default function LoginModal({ onClose }: LoginModalProps) {
             className="text-sm underline"
             style={{ color: "var(--muted-foreground)" }}
           >
-            {isRegister ? "Already have an account? Sign in" : "New to KnitHub? Join free"}
+            {isRegister ? "已有账号？去登录" : "还没有账号？免费注册"}
           </button>
         </div>
 
         <div className="mt-4 pt-4" style={{ borderTop: "1px solid var(--border)" }}>
           <p className="text-xs text-center" style={{ color: "var(--muted-foreground)" }}>
-            Demo accounts: <strong>woolenwhimsy</strong> / knit123 · <strong>threadcountess</strong> / fiber456
+            演示账号：<strong>woolenwhimsy</strong> / knit123 · <strong>threadcountess</strong> / fiber456
           </p>
         </div>
       </div>

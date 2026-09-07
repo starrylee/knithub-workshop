@@ -1,18 +1,42 @@
 package com.knithub.server;
 
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 /**
  * 全局 Web 配置：拦截器注册 / 启动初始化（技术方案第 2 节）。
  *
- * <p>交付阶段：
- * <ul>
- *   <li>FT-01：启动初始化——确保 {@code server/data/} 及 4 个 JSON 存储文件存在
- *       （首启自动建空文件，见技术方案 3.6 并发写策略）</li>
- *   <li>FT-02 起：挂载 {@code LoginRequiredInterceptor}（写操作登录守卫）并维护其白名单</li>
- * </ul>
+ * <p>FT-01-US-02 交付：启动时确保数据目录与 4 个 JSON 存储文件存在——
+ * 文件不存在则创建空数组（首启自动建空文件，技术方案 3.6；种子文件已随
+ * 版本库存在时跳过，不覆盖）。
  *
- * <p>实现前必读：AGENTS.md 红线 + 对应 US 文件（.asdm/workspace/features/）。
+ * <p>数据目录由 {@code app.data-dir} 配置（默认 {@code data}，即运行时工作
+ * 目录下的 server/data/；集成测试以 @TempDir 覆盖）。
  */
-// TODO FT-01: 启动时初始化 data/ 目录与空 JSON 文件（文件已存在则跳过）
-// TODO FT-02: 注册 LoginRequiredInterceptor，排除鉴权白名单端点
+@Component
 public class WebConfig {
+
+    private final Path dataDir;
+
+    public WebConfig(@Value("${app.data-dir}") String dataDir) {
+        this.dataDir = Path.of(dataDir);
+    }
+
+    @PostConstruct
+    void ensureDataFiles() throws IOException {
+        Files.createDirectories(dataDir);
+        for (String name : new String[]{"users.json", "projects.json", "likes.json", "comments.json"}) {
+            Path file = dataDir.resolve(name);
+            if (!Files.exists(file)) {
+                Files.writeString(file, "[]\n");
+            }
+        }
+    }
+
+    // TODO FT-02: 注册 LoginRequiredInterceptor（写操作登录守卫），排除鉴权白名单端点
 }

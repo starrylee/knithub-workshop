@@ -1,17 +1,40 @@
 package com.knithub.server.repo.json;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.knithub.server.domain.User;
 import com.knithub.server.repo.UserRepository;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Optional;
 
 /**
- * {@link UserRepository} 的 JSON 文件实现（存储：server/data/users.json，
+ * {@link UserRepository} 的 JSON 文件实现（存储：{@code server/data/users.json}，
  * 字段 snake_case，与 PG 列名对齐）。
  *
- * <p>职责：自增 id（Repository 内 max+1）、username 唯一查找；
- * 一切约束由代码层保证（技术方案 3.1）。
- *
- * <p>交付阶段：FT-01 阶段 1（技术方案第 4 节）。
- * 实现前必读：AGENTS.md 红线 + FT-01-US-01。
+ * <p>一切约束由代码层保证（技术方案 3.1）：username 唯一性依赖种子数据/注册
+ * 写入侧保证，读取侧仅做大小写不敏感匹配（FT-01 决策 1/4）。
  */
-// TODO FT-01: 基于 JsonFileStore 实现 UserRepository
+@Component
 public class JsonUserRepository implements UserRepository {
+
+    private final JsonFileStore<User> store;
+
+    public JsonUserRepository(@Value("${app.data-dir}") String dataDir, ObjectMapper objectMapper) {
+        this.store = new JsonFileStore<>(
+                Path.of(dataDir, "users.json"),
+                new TypeReference<List<User>>() {
+                },
+                objectMapper);
+    }
+
+    @Override
+    public Optional<User> findByUsername(String username) {
+        return store.readAll().stream()
+                .filter(user -> user.getUsername().equalsIgnoreCase(username))
+                .findFirst();
+    }
 }

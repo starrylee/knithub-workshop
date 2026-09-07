@@ -24,8 +24,9 @@ export default function CommunityPage() {
   const [filter, setFilter] = useState("");
   const [search, setSearch] = useState("");
 
+  // FT-01-US-02: currentUser.id 改为后端 number id，mock 名册仍为字符串 id 体系
   const joinedGroups = currentUser
-    ? groups.filter((g) => g.members.includes(currentUser.id))
+    ? groups.filter((g) => g.members.includes(String(currentUser.id)))
     : [];
 
   const filteredGroups = groups.filter((g) => {

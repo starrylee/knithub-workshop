@@ -40,7 +40,9 @@ export default function NotebookPage() {
     );
   }
 
-  const isOwner = currentUser?.id === pageUser.id;
+  // FT-01-US-02: 登录态改由后端会话供给（id 为 number 自增），mock 数据仍为字符串 id
+  // 体系——owner 判定用 username（两个世界一致的主键）保持行为不变
+  const isOwner = currentUser?.username === pageUser.username;
   const userProjects = projectsData.filter((p) => p.userId === pageUser.id);
   const inProgress = userProjects.filter((p) => p.status === "in-progress");
   const completed = userProjects.filter((p) => p.status === "completed");

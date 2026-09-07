@@ -31,7 +31,8 @@ export default function GroupDetailPage() {
   const [expandedPost, setExpandedPost] = useState<string | null>(posts[0]?.id || null);
   const [isNewPostOpen, setIsNewPostOpen] = useState(false);
 
-  const isJoined = currentUser && group.members.includes(currentUser.id);
+  // FT-01-US-02: currentUser.id 改为后端 number id，mock 名册仍为字符串 id 体系
+  const isJoined = currentUser && group.members.includes(String(currentUser.id));
 
   function submitPost(e: React.FormEvent) {
     e.preventDefault();
@@ -39,7 +40,7 @@ export default function GroupDetailPage() {
     const newPost: Post = {
       id: `fp${Date.now()}`,
       groupId: id!,
-      authorId: currentUser.id,
+      authorId: String(currentUser.id),
       title: newPostTitle.trim(),
       content: newPostContent.trim(),
       image: null,
@@ -58,7 +59,7 @@ export default function GroupDetailPage() {
     if (!currentUser || !replyContent[postId]?.trim()) return;
     const reply: Reply = {
       id: `r${Date.now()}`,
-      authorId: currentUser.id,
+      authorId: String(currentUser.id),
       content: replyContent[postId].trim(),
       likes: 0,
       createdAt: new Date().toISOString(),

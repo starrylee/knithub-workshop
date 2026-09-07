@@ -4,7 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * 织女专属 Web 站点后端入口（技术方案第 4 节阶段 0）。
+ * 织友专属 Web 站点后端入口（技术方案第 4 节阶段 0）。
  *
  * <p>启动前提：JDK 21 + Maven 3.9+。启动命令：{@code mvn spring-boot:run}，
  * 默认端口 8080（见 application.properties）。
