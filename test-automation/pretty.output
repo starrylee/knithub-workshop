@@ -1,157 +1,94 @@
-@FT-01-US-02 @layer:api
-Feature: 用户登录 - API 层 # features/api/user-login.api.feature:3
+@FT-01-US-02 @layer:e2e
+Feature: 用户登录 # features/ui/user-login.feature:13
   作为一个已注册的织友，
   我想要用用户名和密码登录，
   以便进入我的个人空间并持续使用 KnitHub。
-  Background:   # features/api/user-login.api.feature:22
+  Background:   # features/ui/user-login.feature:19
 
-  @api:contract @AC-1
-  Scenario: AC-1 接口契约 - 正确凭据登录成功返回用户信息并建立会话 Cookie  # features/api/user-login.api.feature:32
-    Given 请求基础地址为 "http://localhost:8080"           # steps/user_login_api_steps.py:46
-    Given 请求认证状态为 "未登录"                             # steps/user_login_api_steps.py:59
-    And 存在如下注册用户                                    # steps/user_login_api_steps.py:72
-      | id | username     | password | display_name | avatar                                                                                      |
-      | 2  | woolenwhimsy | knit123  | Sarah Chen   | https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop&auto=format |
-    When 发送 POST 请求 "/api/v1/auth/login"，请求体如下      # steps/user_login_api_steps.py:122
-      """
-      {
-        "username": "woolenwhimsy",
-        "password": "knit123"
-      }
-      """
-    Then 响应状态码为 200                                 # steps/user_login_api_steps.py:135
-    And 返回如下用户信息                                    # steps/user_login_api_steps.py:141
-      """
-      {
-        "id": 2,
-        "username": "woolenwhimsy",
-        "displayName": "Sarah Chen",
-        "avatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop&auto=format"
-      }
-      """
-    And 响应头 Set-Cookie 包含 "sid="                    # steps/user_login_api_steps.py:156
-    And 响应头 Set-Cookie 包含 "Path=/"                  # steps/user_login_api_steps.py:156
-    And 响应头 Set-Cookie 包含 "HttpOnly"                # steps/user_login_api_steps.py:156
-    And 响应头 Set-Cookie 包含 "SameSite=Lax"            # steps/user_login_api_steps.py:156
-    And 响应头 Set-Cookie 包含 "Max-Age=604800"          # steps/user_login_api_steps.py:156
+  @AC-1
+  Scenario: AC-1 正确凭据登录成功建立会话                         # features/ui/user-login.feature:27
+    Given 系统中存在如下注册用户：                                # steps/user_login_ui_steps.py:56
+      | username     | password | displayName |
+      | woolenwhimsy | knit123  | Sarah Chen  |
+    And 用户处于未登录状态，正在浏览首页 "/"                          # steps/user_login_ui_steps.py:97
+    When 用户点击导航栏的"登录 / 注册"按钮，打开标题为"欢迎回来"的登录弹窗         # steps/user_login_ui_steps.py:141
+    And 在"用户名"输入框输入 "woolenwhimsy"                    # steps/user_login_ui_steps.py:153
+    And 在"密码"输入框输入 "knit123"                          # steps/user_login_ui_steps.py:159
+    And 点击"登 录"按钮                                     # steps/user_login_ui_steps.py:165
+    Then 登录弹窗关闭，标题"欢迎回来"不再显示                          # steps/user_login_ui_steps.py:187
+    And 导航栏不再显示"登录 / 注册"按钮，改为显示用户名"Sarah Chen"与"退出"按钮 # steps/user_login_ui_steps.py:194
+    And 页面导航至个人页 "/users/woolenwhimsy"，头部展示如下信息：      # steps/user_login_ui_steps.py:207
+      | 字段   | 值             |
+      | 显示名称 | Sarah Chen    |
+      | 用户名  | @woolenwhimsy |
 
-  @api:contract @AC-1
-  Scenario: AC-1 接口契约 - 用户名大小写变体登录成功且响应返回存储态用户名  # features/api/user-login.api.feature:64
-    Given 请求基础地址为 "http://localhost:8080"        # steps/user_login_api_steps.py:46
-    Given 请求认证状态为 "未登录"                          # steps/user_login_api_steps.py:59
-    And 存在如下注册用户                                 # steps/user_login_api_steps.py:72
-      | id | username     | password | display_name | avatar                                                                                      |
-      | 2  | woolenwhimsy | knit123  | Sarah Chen   | https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop&auto=format |
-    When 发送 POST 请求 "/api/v1/auth/login"，请求体如下   # steps/user_login_api_steps.py:122
-      """
-      {
-        "username": "WoolenWhimsy",
-        "password": "knit123"
-      }
-      """
-    Then 响应状态码为 200                              # steps/user_login_api_steps.py:135
-    And 返回如下用户信息                                 # steps/user_login_api_steps.py:141
-      """
-      {
-        "id": 2,
-        "username": "woolenwhimsy",
-        "displayName": "Sarah Chen",
-        "avatar": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop&auto=format"
-      }
-      """
+  @AC-1
+  Scenario: AC-1 用户名大小写变体登录成功                                                        # features/ui/user-login.feature:41
+    Given 系统中存在如下注册用户：                                                               # steps/user_login_ui_steps.py:56
+      | username     | password | displayName |
+      | woolenwhimsy | knit123  | Sarah Chen  |
+    And 用户处于未登录状态，正在浏览首页 "/"                                                         # steps/user_login_ui_steps.py:97
+    When 用户点击导航栏的"登录 / 注册"按钮，打开标题为"欢迎回来"的登录弹窗                                        # steps/user_login_ui_steps.py:141
+    And 在"用户名"输入框输入 "WoolenWhimsy"                                                   # steps/user_login_ui_steps.py:153
+    And 在"密码"输入框输入 "knit123"                                                         # steps/user_login_ui_steps.py:159
+    And 点击"登 录"按钮                                                                    # steps/user_login_ui_steps.py:165
+    Then 登录弹窗关闭，标题"欢迎回来"不再显示                                                         # steps/user_login_ui_steps.py:187
+    And 导航栏改为显示用户名"Sarah Chen"与"退出"按钮                                                # steps/user_login_ui_steps.py:201
+    And 页面导航至个人页 "/users/woolenwhimsy"（存储态用户名），头部显示名称"Sarah Chen"与用户名"@woolenwhimsy" # steps/user_login_ui_steps.py:228
 
-  @api:error @AC-2
-  Scenario: AC-2 错误码 - 密码错误返回 401 统一提示         # features/api/user-login.api.feature:93
-    Given 请求基础地址为 "http://localhost:8080"      # steps/user_login_api_steps.py:46
-    Given 请求认证状态为 "未登录"                        # steps/user_login_api_steps.py:59
-    And 存在如下注册用户                               # steps/user_login_api_steps.py:72
-      | id | username     | password | display_name | avatar                                                                                      |
-      | 2  | woolenwhimsy | knit123  | Sarah Chen   | https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop&auto=format |
-    When 发送 POST 请求 "/api/v1/auth/login"，请求体如下 # steps/user_login_api_steps.py:122
-      """
-      {
-        "username": "woolenwhimsy",
-        "password": "wool456"
-      }
-      """
-    Then 响应状态码为 401                            # steps/user_login_api_steps.py:135
-    And 返回如下错误信息                               # steps/user_login_api_steps.py:165
-      """
-      {
-        "message": "用户名或密码错误"
-      }
-      """
+  @AC-2
+  Scenario: AC-2 密码错误时显示统一错误提示                # features/ui/user-login.feature:52
+    Given 系统中存在如下注册用户：                        # steps/user_login_ui_steps.py:56
+      | username     | password | displayName |
+      | woolenwhimsy | knit123  | Sarah Chen  |
+    And 用户处于未登录状态，正在浏览首页 "/"                  # steps/user_login_ui_steps.py:97
+    When 用户点击导航栏的"登录 / 注册"按钮，打开标题为"欢迎回来"的登录弹窗 # steps/user_login_ui_steps.py:141
+    And 在"用户名"输入框输入 "woolenwhimsy"            # steps/user_login_ui_steps.py:153
+    And 在"密码"输入框输入 "wool456"                  # steps/user_login_ui_steps.py:159
+    And 点击"登 录"按钮                             # steps/user_login_ui_steps.py:165
+    Then 登录弹窗保持打开，弹窗内显示提示信息"用户名或密码错误"         # steps/user_login_ui_steps.py:246
+    And 导航栏仍显示"登录 / 注册"按钮，页面停留在首页 "/"         # steps/user_login_ui_steps.py:259
 
-  @api:error @AC-2
-  Scenario: AC-2 错误码 - 用户名不存在返回与密码错误完全一致的 401 响应  # features/api/user-login.api.feature:118
-    Given 请求基础地址为 "http://localhost:8080"         # steps/user_login_api_steps.py:46
-    Given 请求认证状态为 "未登录"                           # steps/user_login_api_steps.py:59
-    And 存在如下注册用户                                  # steps/user_login_api_steps.py:72
-      | id | username     | password | display_name | avatar                                                                                      |
-      | 2  | woolenwhimsy | knit123  | Sarah Chen   | https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop&auto=format |
-    When 发送 POST 请求 "/api/v1/auth/login"，请求体如下    # steps/user_login_api_steps.py:122
-      """
-      {
-        "username": "ghostweaver",
-        "password": "anything123"
-      }
-      """
-    Then 响应状态码为 401                               # steps/user_login_api_steps.py:135
-    And 返回如下错误信息                                  # steps/user_login_api_steps.py:165
-      """
-      {
-        "message": "用户名或密码错误"
-      }
-      """
+  @AC-2
+  Scenario: AC-2 用户名不存在时提示与密码错误一致             # features/ui/user-login.feature:62
+    Given 系统中存在如下注册用户：                        # steps/user_login_ui_steps.py:56
+      | username     | password | displayName |
+      | woolenwhimsy | knit123  | Sarah Chen  |
+    And 用户处于未登录状态，正在浏览首页 "/"                  # steps/user_login_ui_steps.py:97
+    Given 用户名 "ghostweaver" 从未注册              # steps/user_login_ui_steps.py:121
+    When 用户点击导航栏的"登录 / 注册"按钮，打开标题为"欢迎回来"的登录弹窗 # steps/user_login_ui_steps.py:141
+    And 在"用户名"输入框输入 "ghostweaver"             # steps/user_login_ui_steps.py:153
+    And 在"密码"输入框输入 "anything123"              # steps/user_login_ui_steps.py:159
+    And 点击"登 录"按钮                             # steps/user_login_ui_steps.py:165
+    Then 登录弹窗保持打开，弹窗内显示提示信息"用户名或密码错误"         # steps/user_login_ui_steps.py:246
+    And 提示信息不包含"用户不存在"字样                      # steps/user_login_ui_steps.py:253
+    And 导航栏仍显示"登录 / 注册"按钮，页面停留在首页 "/"         # steps/user_login_ui_steps.py:259
 
-  @api:boundary @AC-3
-  Scenario: AC-3 字段边界 - 绕过前端直接调用后端时 username 为空字符串  # features/api/user-login.api.feature:144
-    Given 请求基础地址为 "http://localhost:8080"           # steps/user_login_api_steps.py:46
-    Given 请求认证状态为 "未登录"                             # steps/user_login_api_steps.py:59
-    When 发送 POST 请求 "/api/v1/auth/login"，请求体如下      # steps/user_login_api_steps.py:122
-      """
-      {
-        "username": "",
-        "password": "knit123"
-      }
-      """
-    Then 响应状态码为 400                                 # steps/user_login_api_steps.py:135
+  @AC-3
+  Scenario: AC-3 用户名留空时前端必填校验                 # features/ui/user-login.feature:74
+    Given 系统中存在如下注册用户：                        # steps/user_login_ui_steps.py:56
+      | username     | password | displayName |
+      | woolenwhimsy | knit123  | Sarah Chen  |
+    And 用户处于未登录状态，正在浏览首页 "/"                  # steps/user_login_ui_steps.py:97
+    When 用户点击导航栏的"登录 / 注册"按钮，打开标题为"欢迎回来"的登录弹窗 # steps/user_login_ui_steps.py:141
+    And "用户名"输入框保持留空                          # steps/user_login_ui_steps.py:172
+    And 在"密码"输入框输入 "knit123"                  # steps/user_login_ui_steps.py:159
+    And 点击"登 录"按钮                             # steps/user_login_ui_steps.py:165
+    Then 登录弹窗保持打开，弹窗内显示提示信息"请输入用户名"           # steps/user_login_ui_steps.py:246
+    And 未向后端发出登录请求                            # steps/user_login_ui_steps.py:266
+    And 导航栏仍显示"登录 / 注册"按钮，页面停留在首页 "/"         # steps/user_login_ui_steps.py:259
 
-  @api:boundary @AC-3
-  Scenario: AC-3 字段边界 - username 为纯空格          # features/api/user-login.api.feature:159
-    Given 请求基础地址为 "http://localhost:8080"      # steps/user_login_api_steps.py:46
-    Given 请求认证状态为 "未登录"                        # steps/user_login_api_steps.py:59
-    When 发送 POST 请求 "/api/v1/auth/login"，请求体如下 # steps/user_login_api_steps.py:122
-      """
-      {
-        "username": "   ",
-        "password": "knit123"
-      }
-      """
-    Then 响应状态码为 400                            # steps/user_login_api_steps.py:135
-
-  @api:boundary @AC-3
-  Scenario: AC-3 字段边界 - 绕过前端直接调用后端时 password 为空字符串  # features/api/user-login.api.feature:174
-    Given 请求基础地址为 "http://localhost:8080"           # steps/user_login_api_steps.py:46
-    Given 请求认证状态为 "未登录"                             # steps/user_login_api_steps.py:59
-    When 发送 POST 请求 "/api/v1/auth/login"，请求体如下      # steps/user_login_api_steps.py:122
-      """
-      {
-        "username": "woolenwhimsy",
-        "password": ""
-      }
-      """
-    Then 响应状态码为 400                                 # steps/user_login_api_steps.py:135
-
-  @api:boundary @AC-3
-  Scenario: AC-3 字段边界 - 请求体缺失 password 字段      # features/api/user-login.api.feature:189
-    Given 请求基础地址为 "http://localhost:8080"      # steps/user_login_api_steps.py:46
-    Given 请求认证状态为 "未登录"                        # steps/user_login_api_steps.py:59
-    When 发送 POST 请求 "/api/v1/auth/login"，请求体如下 # steps/user_login_api_steps.py:122
-      """
-      {
-        "username": "woolenwhimsy"
-      }
-      """
-    Then 响应状态码为 400                            # steps/user_login_api_steps.py:135
+  @AC-3
+  Scenario: AC-3 密码留空时前端必填校验                  # features/ui/user-login.feature:85
+    Given 系统中存在如下注册用户：                        # steps/user_login_ui_steps.py:56
+      | username     | password | displayName |
+      | woolenwhimsy | knit123  | Sarah Chen  |
+    And 用户处于未登录状态，正在浏览首页 "/"                  # steps/user_login_ui_steps.py:97
+    When 用户点击导航栏的"登录 / 注册"按钮，打开标题为"欢迎回来"的登录弹窗 # steps/user_login_ui_steps.py:141
+    And 在"用户名"输入框输入 "woolenwhimsy"            # steps/user_login_ui_steps.py:153
+    And "密码"输入框保持留空                           # steps/user_login_ui_steps.py:178
+    And 点击"登 录"按钮                             # steps/user_login_ui_steps.py:165
+    Then 登录弹窗保持打开，弹窗内显示提示信息"请输入密码"            # steps/user_login_ui_steps.py:246
+    And 未向后端发出登录请求                            # steps/user_login_ui_steps.py:266
+    And 导航栏仍显示"登录 / 注册"按钮，页面停留在首页 "/"         # steps/user_login_ui_steps.py:259
 
