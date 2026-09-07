@@ -1,0 +1,10 @@
+[
+  {
+    "id": 1,
+    "username": "zhinv",
+    "password_hash": "$2y$10$OiJSQjQdecIGhkQrAqred..8/LUbDgeNXnUtBsRaMKA0uDm38v63S",
+    "display_name": "织女",
+    "avatar": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=80&h=80&fit=crop&auto=format",
+    "created_at": "2026-09-05T08:00:00Z"
+  }
+]
