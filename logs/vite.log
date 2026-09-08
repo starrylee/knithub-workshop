@@ -1,0 +1,10 @@
+
+> figma-make-app@1.0.0 dev D:\Python Project\knithub-workshop\web-ui
+> vite --host 0.0.0.0
+
+
+  [32m[1mVITE[22m v8.2.2[39m  [2mready in [0m[1m3448[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5174[22m/[39m
+  [32m➜[39m  [1mNetwork[22m: [36mhttp://10.65.222.13:[1m5174[22m/[39m  [2mWLAN[22m
+ ELIFECYCLE  Command failed with exit code 4294967295.
