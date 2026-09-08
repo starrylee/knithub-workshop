@@ -6,6 +6,7 @@ import projectsData from "../data/project-list.json";
 import yarnData from "../data/yarn-stash-list.json";
 import patterns from "../data/pattern-list.json";
 import forumPosts from "../data/forum-post-list.json";
+import ProjectCreateModal, { CreatedProject } from "../components/ProjectCreateModal";
 
 type Tab = "projects" | "queue" | "stash" | "following";
 
@@ -28,6 +29,16 @@ export default function NotebookPage() {
   const [newProjectPatternId, setNewProjectPatternId] = useState<string | null>(
     searchParams.get("new")
   );
+
+  // FT-02-US-01：真实 API 创建的项目（乐观插入，新建项置顶）。数据源切 fetch 后并入既有列表。
+  const [showCreate, setShowCreate] = useState(false);
+  const [createdProjects, setCreatedProjects] = useState<CreatedProject[]>([]);
+  const [toast, setToast] = useState<string | null>(null);
+  useEffect(() => {
+    if (!toast) return;
+    const t = setTimeout(() => setToast(null), 2000);
+    return () => clearTimeout(t);
+  }, [toast]);
 
   // FT-01 兜底（PO 裁定 2026-09-07）：后端真实账号（种子 zhinv / 新注册用户）不在 mock
   // user-list.json 中，个人页以当前登录用户的身份兜底渲染，项目/库存等列表自然为空，
@@ -181,11 +192,34 @@ export default function NotebookPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
         {tab === "projects" && (
           <div>
+            {isOwner && (
+              <div className="flex justify-end mb-4">
+                <button
+                  onClick={() => setShowCreate(true)}
+                  className="px-4 py-2 rounded-lg text-sm font-semibold transition-opacity hover:opacity-90"
+                  style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
+                >
+                  + 新建项目
+                </button>
+              </div>
+            )}
             {newProjectPatternId && (
               <NewProjectBanner
                 patternId={newProjectPatternId}
                 onDismiss={() => setNewProjectPatternId(null)}
               />
+            )}
+            {createdProjects.length > 0 && (
+              <section className="mb-10">
+                <h2 className="text-xl font-bold mb-4" style={{ fontFamily: "Lora, serif", color: "var(--foreground)" }}>
+                  我的项目
+                </h2>
+                <div className="space-y-4">
+                  {createdProjects.map((proj) => (
+                    <CreatedProjectCard key={proj.id} project={proj} />
+                  ))}
+                </div>
+              </section>
             )}
             {inProgress.length > 0 && (
               <section className="mb-10">
@@ -356,6 +390,25 @@ export default function NotebookPage() {
           </div>
         )}
       </div>
+
+      {showCreate && (
+        <ProjectCreateModal
+          onClose={() => setShowCreate(false)}
+          onCreated={(project) => {
+            setCreatedProjects((prev) => [project, ...prev]);
+            setToast("项目已创建");
+          }}
+        />
+      )}
+
+      {toast && (
+        <div
+          className="fixed top-20 left-1/2 -translate-x-1/2 z-[60] px-4 py-2 rounded-lg text-sm shadow-lg"
+          style={{ background: "var(--foreground)", color: "var(--background)" }}
+        >
+          {toast}
+        </div>
+      )}
     </div>
   );
 }
@@ -426,6 +479,47 @@ function ProjectCard({ project, isOwner }: { project: (typeof projectsData)[numb
             )}
           </p>
         </div>
+      </div>
+    </div>
+  );
+}
+
+function CreatedProjectCard({ project }: { project: CreatedProject }) {
+  return (
+    <div
+      className="rounded-xl overflow-hidden"
+      style={{ background: "var(--card)", border: "1.5px solid var(--border)" }}
+    >
+      <div className="p-4">
+        <div className="flex items-start justify-between gap-2 mb-1">
+          <h3 className="font-bold text-base" style={{ fontFamily: "Lora, serif", color: "var(--foreground)" }}>
+            {project.name}
+          </h3>
+          <span
+            className="text-xs font-semibold px-2 py-0.5 rounded-full shrink-0"
+            style={{
+              background: "var(--muted)",
+              color: "var(--muted-foreground)",
+              border: "1px solid var(--border)",
+            }}
+          >
+            {project.status}
+          </span>
+        </div>
+        <p className="text-xs mb-2" style={{ color: "var(--muted-foreground)" }}>
+          预计完成：{project.dueDate}
+        </p>
+        {project.milestones.length > 0 && (
+          <ul className="text-xs space-y-1" style={{ color: "var(--muted-foreground)" }}>
+            {project.milestones.map((m, i) => (
+              <li key={i} className="flex items-center gap-1.5">
+                <span>◇</span>
+                <span>{m.name}</span>
+                {m.dueDate && <span>· {m.dueDate}</span>}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );
