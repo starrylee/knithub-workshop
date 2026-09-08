@@ -5,6 +5,8 @@ import com.knithub.server.repo.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 /**
  * 鉴权业务层（技术方案第 4 节阶段 2~3）。
  *
@@ -41,6 +43,24 @@ public class AuthService {
         }
         String sid = sessionManager.createSession(user.getId());
         return new LoginResult(user, sid);
+    }
+
+    /**
+     * 按会话 id 恢复当前登录用户（FT-01-US-03 {@code /auth/me}）。
+     *
+     * @param sid Cookie {@code sid}
+     * @return 有效会话对应用户；sid 缺失/无效或对应用户不存在时为 empty
+     */
+    public Optional<User> findUserBySid(String sid) {
+        return sessionManager.getUserId(sid).flatMap(userRepository::findById);
+    }
+
+    /**
+     * 登出销毁会话（FT-01-US-04 {@code /auth/logout}）。幂等：sid 为空或
+     * 无效时不做任何事，不抛错。
+     */
+    public void logout(String sid) {
+        sessionManager.invalidate(sid);
     }
 
     /**

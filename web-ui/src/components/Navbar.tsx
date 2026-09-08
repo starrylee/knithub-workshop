@@ -12,7 +12,7 @@ const navLinks = [
 ];
 
 export default function Navbar() {
-  const { currentUser, logout } = useAuth();
+  const { currentUser, booting, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [showLogin, setShowLogin] = useState(false);
@@ -80,7 +80,7 @@ export default function Navbar() {
 
           {/* Auth area */}
           <div className="flex items-center gap-3">
-            {currentUser ? (
+            {booting ? null : currentUser ? (
               <div className="flex items-center gap-2">
                 <Link
                   to={`/users/${currentUser.username}`}

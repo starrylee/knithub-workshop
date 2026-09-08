@@ -10,7 +10,7 @@ import java.util.Optional;
  * <p>JSON 阶段由 {@code repo/json/JsonUserRepository} 实现；迁移 PG 时仅替换
  * {@code repo/json/} 包内实现，本接口即未来 PG 迁移契约，业务代码只依赖本接口。
  *
- * <p>方法集随各 US 需要增加，不预发明（当前：FT-01-US-02 登录所需的最小集）。
+ * <p>方法集随各 US 需要增加，不预发明（当前：FT-01-US-02/03 登录与会话恢复所需的最小集）。
  */
 public interface UserRepository {
 
@@ -24,4 +24,14 @@ public interface UserRepository {
      * @return 命中的用户；不存在时为 empty
      */
     Optional<User> findByUsername(String username);
+
+    /**
+     * 按主键查找用户。
+     *
+     * <p>FT-01-US-03（会话恢复）需要：sid → userId 后回查用户实体。
+     *
+     * @param id 用户主键
+     * @return 命中的用户；不存在时为 empty
+     */
+    Optional<User> findById(Long id);
 }

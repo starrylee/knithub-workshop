@@ -37,4 +37,11 @@ public class JsonUserRepository implements UserRepository {
                 .filter(user -> user.getUsername().equalsIgnoreCase(username))
                 .findFirst();
     }
+
+    @Override
+    public Optional<User> findById(Long id) {
+        return store.readAll().stream()
+                .filter(user -> user.getId().equals(id))
+                .findFirst();
+    }
 }
