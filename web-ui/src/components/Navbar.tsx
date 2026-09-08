@@ -1,35 +1,55 @@
 import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import LoginModal from "./LoginModal";
 
-const navLinks = [
+/**
+ * 顶部导航（FT-01-US-05，口径 A 需求变更后）：
+ * - 「首页」为公开落地页，未登录可直接访问；
+ * - 「图案库 / 我的项目 / 社区 / 关于」均为受限入口（authRequired）——
+ *   未登录点击时拦截跳转并弹出登录弹窗（停留当前页、不发生页面拦截跳转），
+ *   登录成功后自动续接到各自目标页面（登录续接，FT-01-US-05）。
+ */
+const navLinks: {
+  label: string;
+  href: string | null;
+  authRequired?: boolean;
+}[] = [
   { label: "首页", href: "/" },
-  { label: "图案库", href: "/patterns" },
+  { label: "图案库", href: "/patterns", authRequired: true },
   { label: "我的项目", href: null, authRequired: true },
-  { label: "社区", href: "/community" },
-  { label: "关于", href: "/about" },
+  { label: "社区", href: "/community", authRequired: true },
+  { label: "关于", href: "/about", authRequired: true },
 ];
 
 export default function Navbar() {
   const { currentUser, logout } = useAuth();
   const location = useLocation();
-  const navigate = useNavigate();
   const [showLogin, setShowLogin] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  // 操作触发登录的续接目标：null 表示缺省（登录后进入个人页）
+  const [loginRedirect, setLoginRedirect] = useState<string | null>(null);
 
-  function handleProjectsClick(e: React.MouseEvent) {
-    if (!currentUser) {
-      e.preventDefault();
-      setShowLogin(true);
-    } else {
-      navigate(`/users/${currentUser.username}`);
-    }
-  }
-
-  function getHref(link: typeof navLinks[number]) {
+  function getHref(link: (typeof navLinks)[number]) {
     if (link.label === "我的项目") return currentUser ? `/users/${currentUser.username}` : "#";
     return link.href || "#";
+  }
+
+  function openLoginWithRedirect(link: (typeof navLinks)[number]) {
+    // 「我的项目」登录后进个人页（loginRedirect=null 走 LoginModal 默认行为）；
+    // 其余受限入口登录后自动续接到其目标公开页。
+    setLoginRedirect(link.label === "我的项目" ? null : link.href);
+    setShowLogin(true);
+  }
+
+  function handleNavLinkClick(e: React.MouseEvent, link: (typeof navLinks)[number]) {
+    if (!link.authRequired) return; // 公开项（首页）：保持默认导航
+    if (!currentUser) {
+      // 未登录访客点击受限入口：拦截页面跳转，弹出登录弹窗（停留当前页）
+      e.preventDefault();
+      openLoginWithRedirect(link);
+    }
+    // 已登录用户点击受限入口：走默认 Link 导航直达
   }
 
   return (
@@ -59,7 +79,7 @@ export default function Navbar() {
                 <Link
                   key={link.label}
                   to={href}
-                  onClick={link.label === "我的项目" ? handleProjectsClick : undefined}
+                  onClick={link.authRequired ? (e) => handleNavLinkClick(e, link) : undefined}
                   className="px-3 py-1.5 rounded-md text-sm font-medium transition-colors"
                   style={{
                     color: isActive ? "var(--primary)" : "var(--foreground)",
@@ -108,7 +128,10 @@ export default function Navbar() {
               </div>
             ) : (
               <button
-                onClick={() => setShowLogin(true)}
+                onClick={() => {
+                  setLoginRedirect(null); // 主动登录：成功后进入个人页
+                  setShowLogin(true);
+                }}
                 className="px-4 py-1.5 rounded-lg text-sm font-semibold transition-opacity hover:opacity-90"
                 style={{ background: "var(--primary)", color: "var(--primary-foreground)" }}
               >
@@ -141,7 +164,7 @@ export default function Navbar() {
                 to={getHref(link)}
                 onClick={(e) => {
                   setMenuOpen(false);
-                  if (link.label === "我的项目") handleProjectsClick(e);
+                  handleNavLinkClick(e, link);
                 }}
                 className="block px-3 py-2 rounded-md text-sm font-medium"
                 style={{ color: "var(--foreground)" }}
@@ -153,7 +176,7 @@ export default function Navbar() {
         )}
       </header>
 
-      {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}
+      {showLogin && <LoginModal onClose={() => { setLoginRedirect(null); setShowLogin(false); }} redirectTo={loginRedirect} />}
     </>
   );
 }

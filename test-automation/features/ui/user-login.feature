@@ -1,4 +1,3 @@
-# language: zh
 # 本 .feature 文件由 asdm-test-spec-ui-generate 基于前端源码生成
 # 源码扫描范围: web-ui/src/components/Navbar.tsx、web-ui/src/components/LoginModal.tsx、
 #   web-ui/src/context/AuthContext.tsx、web-ui/src/App.tsx（路由 /users/:username）、

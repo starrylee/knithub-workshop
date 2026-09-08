@@ -4,9 +4,15 @@ import { useNavigate } from "react-router-dom";
 
 interface LoginModalProps {
   onClose: () => void;
+  /**
+   * 登录成功后的自动续接目标（FT-01-US-05 操作触发登录）：
+   * 传入受限操作想去的页面路径时，登录成功即跳转到该路径；
+   * 缺省（null）时维持既有行为——跳转到当前用户的个人页。
+   */
+  redirectTo?: string | null;
 }
 
-export default function LoginModal({ onClose }: LoginModalProps) {
+export default function LoginModal({ onClose, redirectTo = null }: LoginModalProps) {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
@@ -31,9 +37,12 @@ export default function LoginModal({ onClose }: LoginModalProps) {
     }
     const user: User | null = await login(username, password);
     if (user) {
-      // 决策 6：主动登录成功跳转个人页（操作触发登录的续接逻辑随 US-05 接入）
+      // 操作触发登录（FT-01-US-05）：登录成功后自动续接到受限操作想去的页面
+      // （redirectTo）；未携带续接目标时维持既有行为——跳转当前用户个人页。
+      const destination =
+        redirectTo && redirectTo !== "#" ? redirectTo : `/users/${user.username}`;
       onClose();
-      navigate(`/users/${user.username}`);
+      navigate(destination);
     } else {
       // AC-2：统一提示，不区分用户名或密码错误（防用户名枚举）
       setError("用户名或密码错误");
