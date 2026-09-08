@@ -12,7 +12,7 @@ const navLinks = [
 ];
 
 export default function Navbar() {
-  const { currentUser, logout } = useAuth();
+  const { currentUser, logout, initializing } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [showLogin, setShowLogin] = useState(false);
@@ -80,7 +80,14 @@ export default function Navbar() {
 
           {/* Auth area */}
           <div className="flex items-center gap-3">
-            {currentUser ? (
+            {initializing ? (
+              /* FT-01-US-03 AC-4：会话恢复完成前渲染占位，不闪现游客控件/用户名 */
+              <span
+                aria-hidden="true"
+                className="w-8 h-8 rounded-full shrink-0"
+                style={{ background: "var(--muted)", border: "1.5px solid var(--border)" }}
+              />
+            ) : currentUser ? (
               <div className="flex items-center gap-2">
                 <Link
                   to={`/users/${currentUser.username}`}

@@ -1,0 +1,7 @@
+# 运行日志（本地启动服务时产生的 .vite.dev.log / .server.dev.log 等）
+*.log
+
+# 各子模块更细规则见：server/.gitignore、web-ui/.gitignore、test-automation/.gitignore
+
+# CodeBuddy 本地项目数据（会话历史、配置等，不应入库）
+.codebuddy/

@@ -24,4 +24,12 @@ public interface UserRepository {
      * @return 命中的用户；不存在时为 empty
      */
     Optional<User> findByUsername(String username);
+
+    /**
+     * 按用户 id 查找用户（FT-01-US-03：会话恢复 me 端点按会话内 userId 反查）。
+     *
+     * @param id 用户 id
+     * @return 命中的用户；不存在时为 empty
+     */
+    Optional<User> findById(Long id);
 }
