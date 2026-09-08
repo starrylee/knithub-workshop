@@ -7,6 +7,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,7 +24,9 @@ import java.util.Map;
  * UserResponse（camelCase）+ HttpOnly Cookie {@code sid}；凭据错误 401 +
  * 统一提示「用户名或密码错误」（不区分具体哪项错误，防用户名枚举，AC-2）。
  *
- * <p>后续端点随对应 US 交付：register（US-01）、me（US-03）、logout（US-04）。
+ * <p>FT-01-US-04 交付：{@code POST /api/v1/auth/logout}——销毁 sid 会话 +
+ * 下发 Max-Age=0 清除 Cookie。后续端点随对应 US 交付：register（US-01）、
+ * me（US-03）。
  */
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -41,15 +44,35 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<UserResponse> login(@Valid @RequestBody LoginRequest request) {
         AuthService.LoginResult result = authService.login(request.getUsername(), request.getPassword());
-        ResponseCookie cookie = ResponseCookie.from("sid", result.sid())
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, sidCookie(result.sid(), SESSION_COOKIE_MAX_AGE).toString())
+                .body(UserResponse.from(result.user()));
+    }
+
+    /**
+     * 登出（FT-01-US-04）：销毁 sid 对应服务端会话 + 下发 Max-Age=0 的清除
+     * Cookie，双重保障杜绝「假登出」。返回 200 无响应体，前端凭响应成功
+     * 才清除本地登录态。
+     */
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@CookieValue(name = "sid", required = false) String sid) {
+        authService.logout(sid);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, sidCookie("", Duration.ZERO).toString())
+                .build();
+    }
+
+    /**
+     * 构造 {@code sid} 会话 Cookie（HttpOnly + SameSite=Lax + Path=/；
+     * 登录 Set 有效值、登出以 Max-Age=0 清除）。
+     */
+    private static ResponseCookie sidCookie(String value, Duration maxAge) {
+        return ResponseCookie.from("sid", value)
                 .httpOnly(true)
                 .sameSite("Lax")
-                .maxAge(SESSION_COOKIE_MAX_AGE)
+                .maxAge(maxAge)
                 .path("/")
                 .build();
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(UserResponse.from(result.user()));
     }
 
     /**
@@ -63,5 +86,4 @@ public class AuthController {
 
     // TODO FT-01-US-01: POST /api/v1/auth/register（注册；重复用户名 → 409）
     // TODO FT-01-US-03: GET /api/v1/auth/me（会话恢复，刷新不掉登录态）
-    // TODO FT-01-US-04: POST /api/v1/auth/logout（登出销毁会话）
 }

@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * + Max-Age 7 天（必须设 Max-Age，否则默认会话 Cookie 关浏览器即失效，
  * 违反「重开浏览器不掉登录态」验收口径）。
  *
- * <p>实现于 FT-01-US-02（创建/查询；销毁随 US-04 登出接入）。
+ * <p>交付：创建/查询（FT-01-US-02）、销毁 {@link #invalidate}（FT-01-US-04 登出）。
  */
 @Component
 public class SessionManager {
@@ -45,5 +45,16 @@ public class SessionManager {
         return Optional.ofNullable(sessions.get(sid));
     }
 
-    // TODO FT-01-US-04: invalidate(sid)——登出销毁会话
+    /**
+     * 销毁会话（FT-01-US-04 登出）：从会话表中移除该 sid。
+     *
+     * <p>幂等：sid 为空或不存在时不做任何事、不报错（登出语义为「确保该会话
+     * 失效」，不区分是否原本有效——配合 Cookie 清除防止假登出）。
+     */
+    public void invalidate(String sid) {
+        if (sid == null) {
+            return;
+        }
+        sessions.remove(sid);
+    }
 }

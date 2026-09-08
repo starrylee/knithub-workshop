@@ -13,13 +13,14 @@ export interface User {
 interface AuthContextType {
   currentUser: User | null;
   login: (username: string, password: string) => Promise<User | null>;
-  logout: () => void;
+  /** 登出：返回是否成功（后端确认销毁会话后本地才清态；失败返回 false 且登录态不变）。 */
+  logout: () => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType>({
   currentUser: null,
   login: async () => null,
-  logout: () => {},
+  logout: async () => false,
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -48,9 +49,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  // TODO FT-01-US-04: 登出调后端销毁会话；当前仅清前端态
-  function logout() {
-    setCurrentUser(null);
+  // FT-01-US-04（AC-1）：登出为前后端双向——先调 POST /api/v1/auth/logout，
+  // 服务端确认销毁会话并下发清除 Cookie 后才清空本地登录态（杜绝"假登出"）。
+  // 后端登出失败（网络异常/非 2xx）时不改本地态、返回 false，由调用方提示
+  // "登出失败，请重试"（失败回滚，登录态与当前会话保持有效）。
+  async function logout(): Promise<boolean> {
+    try {
+      const res = await fetch("/api/v1/auth/logout", { method: "POST" });
+      if (!res.ok) {
+        return false;
+      }
+      setCurrentUser(null);
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   return (

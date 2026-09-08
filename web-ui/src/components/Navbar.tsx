@@ -17,6 +17,7 @@ export default function Navbar() {
   const navigate = useNavigate();
   const [showLogin, setShowLogin] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [logoutError, setLogoutError] = useState(false);
 
   function handleProjectsClick(e: React.MouseEvent) {
     if (!currentUser) {
@@ -24,6 +25,15 @@ export default function Navbar() {
       setShowLogin(true);
     } else {
       navigate(`/users/${currentUser.username}`);
+    }
+  }
+
+  // FT-01-US-04（AC-1 示例 2）：后端登出失败时保持登录态并提示，不产生"假登出"
+  async function handleLogout() {
+    setLogoutError(false);
+    const ok = await logout();
+    if (!ok) {
+      setLogoutError(true);
     }
   }
 
@@ -97,7 +107,7 @@ export default function Navbar() {
                   </span>
                 </Link>
                 <button
-                  onClick={logout}
+                  onClick={handleLogout}
                   className="text-sm px-3 py-1.5 rounded-md font-medium transition-colors"
                   style={{ color: "var(--muted-foreground)", background: "var(--muted)" }}
                   onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = "var(--border)")}
@@ -154,6 +164,19 @@ export default function Navbar() {
       </header>
 
       {showLogin && <LoginModal onClose={() => setShowLogin(false)} />}
+
+      {/* FT-01-US-04（AC-1 示例 2）：后端登出失败提示——登录态保持不变，可继续使用 */}
+      {logoutError && (
+        <div
+          role="alert"
+          onClick={() => setLogoutError(false)}
+          className="fixed left-1/2 top-20 z-50 -translate-x-1/2 flex items-center gap-3 px-4 py-2.5 rounded-lg shadow-lg cursor-pointer text-sm font-medium"
+          style={{ background: "#FDE8E0", color: "#B54B22", border: "1px solid #F4C9B8" }}
+        >
+          <span>登出失败，请重试</span>
+          <span className="text-base leading-none" aria-hidden="true">×</span>
+        </div>
+      )}
     </>
   );
 }

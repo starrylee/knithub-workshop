@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
  * {@link InvalidCredentialsException}，不区分用户名不存在与密码错误（防用户名
  * 枚举，AC-2）。
  *
+ * <p>FT-01-US-04 交付：登出（销毁 sid 会话）。
+ *
  * <p>后续随对应 US 交付：注册（US-01）。
  */
 @Service
@@ -41,6 +43,15 @@ public class AuthService {
         }
         String sid = sessionManager.createSession(user.getId());
         return new LoginResult(user, sid);
+    }
+
+    /**
+     * 登出（FT-01-US-04）：销毁 sid 对应的服务端会话，确保旧凭证不可复用。
+     *
+     * <p>幂等——sid 不存在时静默成功，不抛异常。
+     */
+    public void logout(String sid) {
+        sessionManager.invalidate(sid);
     }
 
     /**
