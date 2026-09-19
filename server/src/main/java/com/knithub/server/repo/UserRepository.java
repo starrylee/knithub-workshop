@@ -24,4 +24,11 @@ public interface UserRepository {
      * @return 命中的用户；不存在时为 empty
      */
     Optional<User> findByUsername(String username);
+
+    /**
+     * 保存（新增）用户，返回含存储层分配 id 的用户。
+     *
+     * <p>id 由存储层生成（当前 JSON 实现取现有最大 id + 1；迁移 PG 后为 BIGSERIAL）。
+     */
+    User save(User user);
 }

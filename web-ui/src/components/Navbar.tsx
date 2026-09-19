@@ -27,6 +27,12 @@ export default function Navbar() {
     }
   }
 
+  // 登出后回到首页（需求 2026-09-08）：清空登录态并跳转 "/"
+  function handleLogout() {
+    logout();
+    navigate("/");
+  }
+
   function getHref(link: typeof navLinks[number]) {
     if (link.label === "我的项目") return currentUser ? `/users/${currentUser.username}` : "#";
     return link.href || "#";
@@ -97,7 +103,7 @@ export default function Navbar() {
                   </span>
                 </Link>
                 <button
-                  onClick={logout}
+                  onClick={handleLogout}
                   className="text-sm px-3 py-1.5 rounded-md font-medium transition-colors"
                   style={{ color: "var(--muted-foreground)", background: "var(--muted)" }}
                   onMouseEnter={(e) => ((e.currentTarget as HTMLElement).style.background = "var(--border)")}

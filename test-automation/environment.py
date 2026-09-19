@@ -10,7 +10,9 @@
 
 from __future__ import annotations
 
+import json
 import re
+from pathlib import Path
 from typing import List, Optional
 
 from core.api_client import APIClient
@@ -22,6 +24,11 @@ logger = get_logger(__name__)
 
 # 判定为 UI 测试的 tag
 UI_TAGS = {"ui", "browser", "e2e"}
+
+# 后端用户存储文件默认路径（注册场景需落盘清理）
+_DEFAULT_USERS_DATA_FILE = (
+    Path(__file__).resolve().parent.parent / "server" / "data" / "users.json"
+)
 
 
 # ======================================================================
@@ -106,6 +113,7 @@ def after_scenario(context, scenario) -> None:
     finally:
         try:
             _cleanup_test_data(context)
+            _cleanup_registered_usernames(context)
         finally:
             if getattr(context, "browser_factory", None) is not None:
                 context.browser_factory.close_context()
@@ -166,6 +174,37 @@ def _log_failure_details(context, scenario) -> None:
         logger.error("  失败步骤：%s %s", step.step_type, step.name)
         if getattr(step, "error_message", None):
             logger.error("  错误信息：%s", step.error_message[:2000])
+
+
+def _cleanup_registered_usernames(context) -> None:
+    """删除注册场景写入后端 JSON 存储的用户。
+
+    UI 注册场景会真实落盘（与登录的校验式数据准备不同），不回收会让
+    「用户名未被占用」前置在第二次执行时失败。清理失败只告警不阻断。
+    """
+    usernames = list(getattr(context, "registered_usernames", []) or [])
+    if not usernames:
+        return
+
+    try:
+        data_file = _users_data_file()
+        users = json.loads(data_file.read_text(encoding="utf-8"))
+        remaining = [u for u in users if u.get("username") not in usernames]
+        if len(remaining) != len(users):
+            data_file.write_text(
+                json.dumps(remaining, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+            )
+            logger.info("已清理注册测试用户：%s", usernames)
+    except Exception as exc:  # pragma: no cover - 清理失败不影响已产出的测试结果
+        logger.warning("清理注册测试用户失败：%s，原因：%s", usernames, exc)
+    finally:
+        context.registered_usernames = []
+
+
+def _users_data_file() -> Path:
+    """后端用户存储文件路径：优先 .env 的 USERS_DATA_FILE，回退到默认种子路径。"""
+    configured = Config().get("USERS_DATA_FILE")
+    return Path(configured) if configured else _DEFAULT_USERS_DATA_FILE
 
 
 def _cleanup_test_data(context) -> None:

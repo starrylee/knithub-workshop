@@ -1,9 +1,12 @@
 package com.knithub.server.auth;
 
 import com.knithub.server.auth.dto.LoginRequest;
+import com.knithub.server.auth.dto.RegisterRequest;
 import com.knithub.server.auth.dto.UserResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -41,15 +44,29 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<UserResponse> login(@Valid @RequestBody LoginRequest request) {
         AuthService.LoginResult result = authService.login(request.getUsername(), request.getPassword());
-        ResponseCookie cookie = ResponseCookie.from("sid", result.sid())
-                .httpOnly(true)
-                .sameSite("Lax")
-                .maxAge(SESSION_COOKIE_MAX_AGE)
-                .path("/")
-                .build();
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(UserResponse.from(result.user()));
+        return okWithSessionCookie(result);
+    }
+
+    /**
+     * 参数校验失败 → 400 + 明确提示（AC-3：密码规则；AC-5：用户名格式兜底。
+     * 提示文案由 DTO 注解的 message 提供，前端原样展示）。
+     */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleValidation(MethodArgumentNotValidException e) {
+        String message = e.getBindingResult().getFieldErrors().stream()
+                .findFirst()
+                .map(FieldError::getDefaultMessage)
+                .orElse("请求参数不合法");
+        return ResponseEntity.badRequest().body(Map.of("message", message));
+    }
+
+    /**
+     * 用户名已被占用 → 409 + 明确提示（AC-2：注册失败且不产生新账号）。
+     */
+    @ExceptionHandler(AuthService.UsernameAlreadyTakenException.class)
+    public ResponseEntity<Map<String, String>> handleUsernameTaken(AuthService.UsernameAlreadyTakenException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(Map.of("message", "用户名已被占用"));
     }
 
     /**
@@ -61,7 +78,30 @@ public class AuthController {
                 .body(Map.of("message", "用户名或密码错误"));
     }
 
-    // TODO FT-01-US-01: POST /api/v1/auth/register（注册；重复用户名 → 409）
+    /**
+     * 注册（FT-01-US-01）：成功 200 + UserResponse + 与登录一致的会话 Cookie
+     * {@code sid}（AC-1：注册成功即时进入登录态）。
+     */
+    @PostMapping("/register")
+    public ResponseEntity<UserResponse> register(@Valid @RequestBody RegisterRequest request) {
+        AuthService.LoginResult result = authService.register(request.getUsername(), request.getPassword());
+        return okWithSessionCookie(result);
+    }
+
+    /**
+     * 200 + 用户信息 + 会话 Cookie {@code sid}（登录与注册共用同一套会话属性）。
+     */
+    private ResponseEntity<UserResponse> okWithSessionCookie(AuthService.LoginResult result) {
+        ResponseCookie cookie = ResponseCookie.from("sid", result.sid())
+                .httpOnly(true)
+                .sameSite("Lax")
+                .maxAge(SESSION_COOKIE_MAX_AGE)
+                .path("/")
+                .build();
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(UserResponse.from(result.user()));
+    }
     // TODO FT-01-US-03: GET /api/v1/auth/me（会话恢复，刷新不掉登录态）
     // TODO FT-01-US-04: POST /api/v1/auth/logout（登出销毁会话）
 }

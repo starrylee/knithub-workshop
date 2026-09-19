@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -36,5 +38,21 @@ public class JsonUserRepository implements UserRepository {
         return store.readAll().stream()
                 .filter(user -> user.getUsername().equalsIgnoreCase(username))
                 .findFirst();
+    }
+
+    @Override
+    public User save(User user) {
+        List<User> users = store.readAll();
+        long nextId = users.stream()
+                .map(User::getId)
+                .filter(Objects::nonNull)
+                .mapToLong(Long::longValue)
+                .max()
+                .orElse(0L) + 1;
+        user.setId(nextId);
+        List<User> updated = new ArrayList<>(users);
+        updated.add(user);
+        store.writeAll(updated);
+        return user;
     }
 }
