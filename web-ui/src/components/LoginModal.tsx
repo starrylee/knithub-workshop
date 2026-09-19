@@ -7,26 +7,50 @@ interface LoginModalProps {
 }
 
 export default function LoginModal({ onClose }: LoginModalProps) {
-  const { login } = useAuth();
+  const { login, register } = useAuth();
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [isRegister, setIsRegister] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (isRegister) {
-      setError("注册功能即将上线，请先用演示账号登录体验");
-      return;
-    }
-    // AC-3（决策 7）：空输入前端必填校验，不向后端发出登录请求
+    // AC-3（决策 7）：空输入前端必填校验，不向后端发出请求
     if (!username.trim()) {
       setError("请输入用户名");
       return;
     }
     if (!password) {
       setError("请输入密码");
+      return;
+    }
+    if (isRegister) {
+      // 2026-09-08 需求：注册需二次输入密码；未填确认密码或两次不一致时前端拦截，不发起请求
+      if (!confirmPassword) {
+        setError("请输入确认密码");
+        return;
+      }
+      if (password !== confirmPassword) {
+        setError("两次输入的密码不一致");
+        return;
+      }
+      try {
+        const registered: User | null = await register(username, password);
+        if (registered) {
+          // 决策 14：注册成功仅关闭弹窗，停留在当前页（不跳转个人页）
+          onClose();
+          return;
+        }
+        setError("注册失败，请稍后重试");
+      } catch (err) {
+        // 后端明确提示原样展示（AC-2「用户名已被占用」、AC-3 密码规则）
+        setError(err instanceof Error ? err.message : "注册失败，请稍后重试");
+      }
+      // 决策 15：注册失败保留已填用户名、清空密码（含确认密码）
+      setPassword("");
+      setConfirmPassword("");
       return;
     }
     const user: User | null = await login(username, password);
@@ -104,6 +128,25 @@ export default function LoginModal({ onClose }: LoginModalProps) {
               }}
             />
           </div>
+          {isRegister && (
+            <div>
+              <label className="block text-sm font-medium mb-1" style={{ color: "var(--foreground)" }}>
+                确认密码
+              </label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full px-3 py-2 rounded-lg text-sm outline-none focus:ring-2"
+                style={{
+                  background: "var(--muted)",
+                  border: "1.5px solid var(--border)",
+                  color: "var(--foreground)",
+                }}
+              />
+            </div>
+          )}
 
           {error && (
             <p className="text-sm px-3 py-2 rounded-lg" style={{ background: "#FDE8E0", color: "#B54B22", border: "1px solid #F4C9B8" }}>
@@ -122,7 +165,7 @@ export default function LoginModal({ onClose }: LoginModalProps) {
 
         <div className="mt-4 text-center">
           <button
-            onClick={() => { setIsRegister(!isRegister); setError(""); }}
+            onClick={() => { setIsRegister(!isRegister); setError(""); setConfirmPassword(""); }}
             className="text-sm underline"
             style={{ color: "var(--muted-foreground)" }}
           >

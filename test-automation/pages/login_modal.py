@@ -28,9 +28,19 @@ class LoginModalPage(BasePage):
     # 来源: web-ui/src/components/LoginModal.tsx L73-89
     USERNAME_INPUT = 'div.fixed.inset-0 form input[type="text"]'
 
-    # "密码"输入框（同上，表单内唯一 input[type="password"]）
-    # 来源: web-ui/src/components/LoginModal.tsx L90-106
-    PASSWORD_INPUT = 'div.fixed.inset-0 form input[type="password"]'
+    # "密码"输入框（input 无 id / data-testid；注册模式另有"确认密码"框，
+    # 以「label 文本精确等于"密码"的字段容器」定位，text-is 不做前缀匹配，
+    # 避免误命中"确认密码"字段块）
+    # 来源: web-ui/src/components/LoginModal.tsx（密码 label + input[type="password"]）
+    PASSWORD_INPUT = (
+        'div.fixed.inset-0 form div:has(> label:text-is("密码")) input[type="password"]'
+    )
+
+    # "确认密码"输入框（注册模式专属，同以 label 文本精确定位）
+    # 来源: web-ui/src/components/LoginModal.tsx（确认密码 label + input[type="password"]）
+    CONFIRM_PASSWORD_INPUT = (
+        'div.fixed.inset-0 form div:has(> label:text-is("确认密码")) input[type="password"]'
+    )
 
     # 错误提示 <p>（error 非空时条件渲染，表单内唯一 p 元素）
     # 来源: web-ui/src/components/LoginModal.tsx L108-112
@@ -39,6 +49,10 @@ class LoginModalPage(BasePage):
     # "登 录"提交按钮（type="submit"；表单外的"免费注册"切换按钮不匹配此选择器）
     # 来源: web-ui/src/components/LoginModal.tsx L114-120
     SUBMIT_BUTTON = 'div.fixed.inset-0 form button[type="submit"]'
+
+    # 注册 tab 切换按钮（文案"还没有账号？免费注册"，表单外的普通 button）
+    # 来源: web-ui/src/components/LoginModal.tsx L123-131
+    REGISTER_TAB_BUTTON = 'div.fixed.inset-0 button:has-text("免费注册")'
 
     @property
     def url_path(self) -> str:
@@ -56,6 +70,10 @@ class LoginModalPage(BasePage):
         """在"密码"输入框填入密码。"""
         return self.fill(self.PASSWORD_INPUT, password)
 
+    def fill_confirm_password(self, password: str) -> "LoginModalPage":
+        """在"确认密码"输入框填入密码（注册模式，需与"密码"一致）。"""
+        return self.fill(self.CONFIRM_PASSWORD_INPUT, password)
+
     def keep_username_empty(self) -> "LoginModalPage":
         """保持"用户名"输入框留空（不输入，并校验当前值为空）。"""
         assert_that(self.get_input_value(self.USERNAME_INPUT)).described_as(
@@ -71,8 +89,12 @@ class LoginModalPage(BasePage):
         return self
 
     def click_submit(self) -> "LoginModalPage":
-        """点击"登 录"提交按钮。"""
+        """点击"登 录" / "注 册"提交按钮（同一 button[type=submit]，文案随模式切换）。"""
         return self.click(self.SUBMIT_BUTTON)
+
+    def switch_to_register_tab(self) -> "LoginModalPage":
+        """点击"还没有账号？免费注册"，切换到注册模式。"""
+        return self.click(self.REGISTER_TAB_BUTTON)
 
     # ------------------------------------------------------------------
     # 断言（Then 步骤）
@@ -98,6 +120,20 @@ class LoginModalPage(BasePage):
     def assert_error_message(self, message: str) -> "LoginModalPage":
         """断言弹窗内错误提示文本完全等于 message。"""
         return self.assert_element_text(self.ERROR_MESSAGE, message)
+
+    def assert_username_value(self, value: str) -> "LoginModalPage":
+        """断言"用户名"输入框当前值等于 value（注册失败保留已填内容）。"""
+        assert_that(self.get_input_value(self.USERNAME_INPUT)).described_as(
+            f'"用户名"输入框应保留已填内容 "{value}"'
+        ).is_equal_to(value)
+        return self
+
+    def assert_password_empty(self) -> "LoginModalPage":
+        """断言"密码"输入框已清空（注册失败不保留密码）。"""
+        assert_that(self.get_input_value(self.PASSWORD_INPUT)).described_as(
+            '"密码"输入框应在注册失败后清空'
+        ).is_empty()
+        return self
 
     def assert_error_message_not_contains(self, fragment: str) -> "LoginModalPage":
         """断言错误提示不包含 fragment 字样（防用户名枚举文案检查）。"""

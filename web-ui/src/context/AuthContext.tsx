@@ -13,12 +13,14 @@ export interface User {
 interface AuthContextType {
   currentUser: User | null;
   login: (username: string, password: string) => Promise<User | null>;
+  register: (username: string, password: string) => Promise<User | null>;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType>({
   currentUser: null,
   login: async () => null,
+  register: async () => null,
   logout: () => {},
 });
 
@@ -48,13 +50,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  /**
+   * 注册（FT-01-US-01）：调后端 /api/v1/auth/register，成功即进入登录态
+   * （服务端同时下发会话 Cookie sid，与登录一致）。失败返回 null。
+   */
+  async function register(username: string, password: string): Promise<User | null> {
+    try {
+      const res = await fetch("/api/v1/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+      if (!res.ok) {
+        // 后端已给出明确文案（409「用户名已被占用」/ 400 密码规则），原样上抛给调用方展示
+        const payload = await res.json().catch(() => null);
+        throw new Error((payload && payload.message) || "注册失败，请稍后重试");
+      }
+      const user: User = await res.json();
+      setCurrentUser(user);
+      return user;
+    } catch (err) {
+      throw err instanceof Error ? err : new Error("注册失败，请稍后重试");
+    }
+  }
+
   // TODO FT-01-US-04: 登出调后端销毁会话；当前仅清前端态
   function logout() {
     setCurrentUser(null);
   }
 
   return (
-    <AuthContext.Provider value={{ currentUser, login, logout }}>
+    <AuthContext.Provider value={{ currentUser, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );
